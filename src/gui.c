@@ -24,6 +24,7 @@ typedef struct
     GLenum gl_err;
     window_s window;
     config_s config;
+    view_s view;
     grid_s grid;
     terrain_s terrain;
 } gui_s;
@@ -35,29 +36,18 @@ static void gl_close_func(void)
     g_gui.window.id = -1;
 }
 
-static void gl_key_func(
-        unsigned char key,
-        int x,
-        int y)
-{
-    if((key == '\e') || (key == 'q'))
-    {
-        gl_close_func();
-    }
-}
-
 static void gl_reshape_func(
         int w,
         int h)
 {
-    // TODO - zoom
-    const double zoom_factor = 1.0;
+    // TODO - move to view_s
     const double fov_degrees = 50.0;
     //const double aspect_ratio = 1.0;
     const double aspect_ratio = (double) w / (double) h;
     const double z_near = 1.0;
     const double z_far = 50.0;
 
+    // TODO - instead of scaling FOV, use spherical coordinates
     const double eye_pos[3] = {15.0, 15.0, 5.0};
     const double center_pos[3] = {0.0, 0.0, 0.0};
     const double up_vector[3] = {0.0, 1.0, 0.0};
@@ -71,7 +61,7 @@ static void gl_reshape_func(
     glLoadIdentity();
 
     gluPerspective(
-            fov_degrees * zoom_factor,
+            fov_degrees * g_gui.view.zoom_factor,
             aspect_ratio,
             z_near,
             z_far);
@@ -85,6 +75,45 @@ static void gl_reshape_func(
             up_vector[0], up_vector[1], up_vector[2]);
 
     glutPostRedisplay();
+}
+
+static void gl_key_func(
+        unsigned char key,
+        int x,
+        int y)
+{
+    if((key == '\e') || (key == 'q'))
+    {
+        gl_close_func();
+    }
+
+    gl_reshape_func(
+            (int) g_gui.window.width,
+            (int) g_gui.window.height);
+}
+
+static void gl_special_key_func(
+        int key,
+        int x,
+        int y)
+{
+    if(key == GLUT_KEY_PAGE_UP)
+    {
+        g_gui.view.zoom_factor += 0.1;
+    }
+    else if(key == GLUT_KEY_PAGE_DOWN)
+    {
+        g_gui.view.zoom_factor -= 0.1;
+
+        if(g_gui.view.zoom_factor <= 0.0)
+        {
+            g_gui.view.zoom_factor = 0.1;
+        }
+    }
+
+    gl_reshape_func(
+            (int) g_gui.window.width,
+            (int) g_gui.window.height);
 }
 
 static void gl_display_func(void)
@@ -127,6 +156,10 @@ int gui_init(
     g_gui.window.width = (unsigned long) config->win_width;
     g_gui.window.height = (unsigned long) config->win_height;
 
+    g_gui.view.zoom_factor = 1.0;
+    g_gui.view.theta = 0.0;
+    g_gui.view.phi = 0.0;
+
     glutInit(&g_gui.gl_argc, g_gui.gl_argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
@@ -139,7 +172,7 @@ int gui_init(
     {
         ret = 1;
     }
-    
+
     if(ret == 0)
     {
         grid_init(config, &g_gui.grid);
@@ -151,6 +184,7 @@ int gui_init(
         glutReshapeFunc(gl_reshape_func);
         glutDisplayFunc(gl_display_func);
         glutKeyboardFunc(gl_key_func);
+        glutSpecialFunc(gl_special_key_func);
 
         glEnable(GL_DEPTH);
         glDisable(GL_LIGHTING);

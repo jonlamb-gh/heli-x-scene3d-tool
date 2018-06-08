@@ -33,4 +33,15 @@ typedef struct
     char title[256];
 } window_s;
 
+// TODO - move to a module view.h, init with config/etc
+typedef struct
+{
+    double zoom_factor;
+    // double radius;
+    double theta;
+    double phi;
+
+    // TODO - eye pos, etc here
+} view_s;
+
 #endif /* GUI_TYPES_H */
