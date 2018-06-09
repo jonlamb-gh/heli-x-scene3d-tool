@@ -34,4 +34,9 @@ void view_adj_eye_pos(
         const double dp,
         view_s * const view);
 
+void view_adj_center_pos(
+        const double dx,
+        const double dz,
+        view_s * const view);
+
 #endif /* VIEW_H */

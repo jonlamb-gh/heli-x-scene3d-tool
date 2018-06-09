@@ -76,9 +76,32 @@ static void gl_key_func(
         int x,
         int y)
 {
+    const double center_dx = 0.5;
+    const double center_dz = 0.5;
+
     if((key == '\e') || (key == 'q'))
     {
         gl_close_func();
+    }
+    else if(key == 'r')
+    {
+        view_init(&g_gui.config, &g_gui.view);
+    }
+    else if(key == 'w')
+    {
+        view_adj_center_pos(-center_dx, 0.0, &g_gui.view);
+    }
+    else if(key == 's')
+    {
+        view_adj_center_pos(center_dx, 0.0, &g_gui.view);
+    }
+    else if(key == 'a')
+    {
+        view_adj_center_pos(0.0, center_dz, &g_gui.view);
+    }
+    else if(key == 'd')
+    {
+        view_adj_center_pos(0.0, -center_dz, &g_gui.view);
     }
 
     gl_reshape_func(

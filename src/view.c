@@ -39,13 +39,17 @@ void view_init(
 void view_update_eye_pos(
         view_s * const view)
 {
-    // TODO
+    // spherical to cartesian
     view->eye_pos[0] = view->radius * sin(view->theta) * cos(view->phi);
     view->eye_pos[1] = view->radius * cos(view->theta);
     view->eye_pos[2] = view->radius * sin(view->theta) * sin(view->phi);
 
-    printf("(%.4f, %0.4f, %0.4f)\n", view->radius, DEG(view->theta), DEG(view->phi));
-    printf("(%.4f, %0.4f, %0.4f)\n", view->eye_pos[0], view->eye_pos[1], view->eye_pos[2]);
+    view->eye_pos[0] += view->center_pos[0];
+    view->eye_pos[1] += view->center_pos[1];
+    view->eye_pos[2] += view->center_pos[2];
+
+    //printf("(%.4f, %0.4f, %0.4f)\n", view->radius, DEG(view->theta), DEG(view->phi));
+    //printf("(%.4f, %0.4f, %0.4f)\n", view->eye_pos[0], view->eye_pos[1], view->eye_pos[2]);
 }
 
 void view_adj_eye_pos(
@@ -58,6 +62,20 @@ void view_adj_eye_pos(
     view->radius += dr;
     view->theta += dt;
     view->phi += dp;
+
+    view_update_eye_pos(view);
+}
+
+void view_adj_center_pos(
+        const double dx,
+        const double dz,
+        view_s * const view)
+{
+    // TODO - constraints
+    // TODO - auto-y ?
+    //view->center_pos[1] = 0;
+    view->center_pos[0] += dx;
+    view->center_pos[2] += dz;
 
     view_update_eye_pos(view);
 }
