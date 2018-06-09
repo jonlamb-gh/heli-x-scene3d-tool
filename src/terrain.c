@@ -67,6 +67,13 @@ static int allocate_buffers(
 
     terrain->num_vertices = terrain->heightmap_size;
 
+    // two triangles for every quad in the terrain mesh
+    terrain->num_triangles =
+            (terrain->heightmap_width - 1) * (terrain->heightmap_height - 1) * 2;
+
+    // 3 indices for each triangle
+    terrain->num_indices = terrain->num_triangles * 3;
+
     if(ret == 0)
     {
         terrain->vertex_buffer = calloc(
@@ -77,7 +84,22 @@ static int allocate_buffers(
         {
             (void) fprintf(
                     stderr,
-                    "failed to allocate TODO bytes\n");
+                    "failed to allocate TODO bytes to vertex buffer\n");
+            ret = 1;
+        }
+    }
+
+    if(ret == 0)
+    {
+        terrain->index_buffer = calloc(
+                terrain->num_indices,
+                sizeof(*terrain->index_buffer));
+
+        if(terrain->index_buffer == NULL)
+        {
+            (void) fprintf(
+                    stderr,
+                    "failed to allocate TODO bytes to index buffer\n");
             ret = 1;
         }
     }
@@ -85,6 +107,7 @@ static int allocate_buffers(
     if(ret == 0)
     {
         glGenBuffers(1, &terrain->vertex_buffer_id);
+        glGenBuffers(1, &terrain->index_buffer_id);
     }
 
     return ret;
@@ -149,6 +172,54 @@ static int generate_heightmap_vbo(
     return ret;
 }
 
+static int generate_heightmap_ibo(
+        terrain_s * const terrain)
+{
+    int ret = 0;
+    GLuint buffer_index = 0;
+
+    GLuint x;
+    GLuint y;
+    for(y = 0; y < (terrain->heightmap_height - 1); y += 1)
+    {
+        for(x = 0; x < (terrain->heightmap_width - 1); x += 1)
+        {
+            const GLuint vertex_index = (y * terrain->heightmap_width) + x;
+
+            // top triangle T0 V0,V1,V2
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index;
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index + terrain->heightmap_width + 1;
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index + 1;
+
+            // bottom triangle T1 V0,V1,V2
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index;
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index + terrain->heightmap_width;
+            terrain->index_buffer[buffer_index++] =
+                    vertex_index + terrain->heightmap_width + 1;
+        }
+    }
+
+    if(ret == 0)
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain->index_buffer_id);
+
+        glBufferData(
+                GL_ELEMENT_ARRAY_BUFFER,
+                terrain->num_indices * sizeof(*terrain->index_buffer),
+                &terrain->index_buffer[0],
+                GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    return ret;
+}
+
 int terrain_init(
         const config_s * const config,
         terrain_s * const terrain)
@@ -180,6 +251,11 @@ int terrain_init(
         ret = generate_heightmap_vbo(terrain);
     }
 
+    if(ret == 0)
+    {
+        ret = generate_heightmap_ibo(terrain);
+    }
+
     return ret;
 }
 
@@ -189,6 +265,11 @@ void terrain_fini(
     if(terrain->vertex_buffer_id != 0)
     {
         glDeleteBuffers(1, &terrain->vertex_buffer_id);
+    }
+
+    if(terrain->index_buffer_id != 0)
+    {
+        glDeleteBuffers(1, &terrain->index_buffer_id);
     }
 
     if(terrain->heightmap_data != NULL)
@@ -202,6 +283,12 @@ void terrain_fini(
         free(terrain->vertex_buffer);
         terrain->vertex_buffer = NULL;
     }
+
+    if(terrain->index_buffer != NULL)
+    {
+        free(terrain->index_buffer);
+        terrain->index_buffer = NULL;
+    }
 }
 
 void terrain_render(
@@ -214,11 +301,18 @@ void terrain_render(
 
     glVertexPointer(3, GL_DOUBLE, 0, NULL);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain->index_buffer_id);
+
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    glDrawArrays(GL_POINTS, 0, terrain->num_vertices);
-    //glDrawArrays(GL_TRIANGLES, 0, terrain->num_vertices);
+    glDrawElements(
+            //GL_TRIANGLES,
+            GL_POINTS,
+            terrain->num_indices,
+            GL_UNSIGNED_INT,
+            0);
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

@@ -27,11 +27,11 @@ typedef struct
     GLuint heightmap_size;
     unsigned char *heightmap_data;
 
-    //double terrain_width;
-    //double terrain_height;
-
     GLuint num_vertices;
+    GLuint num_triangles;
+    GLuint num_indices;
     point_3d_s *vertex_buffer;
+    GLuint *index_buffer;
 
     // TODO
     // heightmap
