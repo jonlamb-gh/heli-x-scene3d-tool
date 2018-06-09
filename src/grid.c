@@ -16,6 +16,42 @@
 #include "gui_util.h"
 #include "grid.h"
 
+static void render_axis_lines(
+        const grid_s * const grid)
+{
+    glLineWidth(grid->line_width);
+
+    // draw XYZ axis lines
+    glColor4d(0.0, 0.0, 1.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(grid->width/2, 0.0, 0.0);
+
+    glColor4d(1.0, 0.0, 0.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 0.0, grid->width/2);
+
+    glColor4d(0.0, 1.0, 0.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, grid->width/2, 0.0);
+}
+
+static void render_cartesian_grid(
+        const grid_s * const grid)
+{
+    glLineWidth(grid->line_width);
+    glColor4dv(grid->line_color.rgba);
+
+    double pos;
+    for(pos = -grid->width/2; pos <= grid->width/2; pos += grid->line_spacing)
+    {
+        glVertex3d(grid->width/2, 0.0, pos);
+        glVertex3d(-grid->width/2, 0.0, pos);
+
+        glVertex3d(pos, 0.0, grid->width/2);
+        glVertex3d(pos, 0.0, -grid->width/2);
+    }
+}
+
 void grid_init(
         const config_s * const config,
         grid_s * const grid)
@@ -36,31 +72,15 @@ void grid_init(
 void grid_render(
         const grid_s * const grid)
 {
-    glLineWidth(grid->line_width);
-    glColor4dv(grid->line_color.rgba);
+    glDisable(GL_DEPTH_TEST);
 
     glBegin(GL_LINES);
 
-    double pos;
-    for(pos = -grid->width/2; pos <= grid->width/2; pos += grid->line_spacing)
-    {
-        glVertex3d(grid->width/2, 0.0, pos);
-        glVertex3d(-grid->width/2, 0.0, pos);
+    render_cartesian_grid(grid);
 
-        glVertex3d(pos, 0.0, grid->width/2);
-        glVertex3d(pos, 0.0, -grid->width/2);
-    }
-
-    // draw XYZ axis lines
-    glColor4d(0.0, 0.0, 1.0, 1.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(grid->width/2, 0.0, 0.0);
-    glColor4d(1.0, 0.0, 0.0, 1.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, 0.0, grid->width/2);
-    glColor4d(0.0, 1.0, 0.0, 1.0);
-    glVertex3d(0.0, 0.0, 0.0);
-    glVertex3d(0.0, grid->width/2, 0.0);
+    render_axis_lines(grid);
 
     glEnd();
+
+    glEnable(GL_DEPTH_TEST);
 }

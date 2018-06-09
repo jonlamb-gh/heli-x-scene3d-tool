@@ -145,14 +145,16 @@ static void gl_display_func(void)
 
     glEnable(GL_BLEND);
 
+    grid_render(&g_gui.grid);
+
     // TODO - testing depth/3D bits
     glColor4d(1.0, 0.0, 0.0, 1.0);
     glutWireCube(200.0);
     glutWireCube(100.0);
     glutWireCube(10.0);
-    glutWireCube(1.0);
 
-    grid_render(&g_gui.grid);
+    glutSolidCube(1.0);
+
 
     glutSwapBuffers();
 }
@@ -175,7 +177,7 @@ int gui_init(
 
     glutInit(&g_gui.gl_argc, g_gui.gl_argv);
 
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
     glutInitWindowSize(g_gui.window.width, g_gui.window.height);
 
@@ -204,9 +206,32 @@ int gui_init(
         glutSpecialFunc(gl_special_key_func);
 
         glEnable(GL_DEPTH);
-        glDisable(GL_LIGHTING);
         glShadeModel(GL_SMOOTH);
         glEnable(GL_DEPTH_TEST);
+
+        // ambient lighting
+        const double amb = 0.3;
+        const double spec = 1.0;
+        const double diff = 1.0;
+        const GLfloat global_ambient[] = {amb, amb, amb, 0.1};
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+        const GLfloat light_pos[] = {0.0, 100.0, 0.0, 0.0};
+        glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+        const GLfloat light_ambient[] = {amb, amb, amb, 1.0};
+        const GLfloat light_diffuse[] = {diff, diff, diff, 1.0};
+        const GLfloat light_specular[] = {spec, spec, spec, 1.0};
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+
+        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+        glEnable(GL_COLOR_MATERIAL);
 
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_POLYGON_SMOOTH);
