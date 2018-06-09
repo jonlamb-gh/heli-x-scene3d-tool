@@ -21,9 +21,9 @@ void view_init(
         view_s * const view)
 {
     // TODO
-    view->radius = 20.0;
-    view->theta = RAD(10.0);
-    view->phi = RAD(10.0);
+    view->radius = 30.0;
+    view->theta = RAD(45.0);
+    view->phi = RAD(45.0);
 
     view->fov = CONFIG_VIEW_FOV_DEGREES;
     view->z_near = CONFIG_VIEW_FOV_Z_NEAR;

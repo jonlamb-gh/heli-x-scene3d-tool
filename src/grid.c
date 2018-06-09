@@ -44,12 +44,23 @@ void grid_render(
     double pos;
     for(pos = -grid->width/2; pos <= grid->width/2; pos += grid->line_spacing)
     {
-        glVertex3d(grid->width/2, 0, pos);
-        glVertex3d(-grid->width/2, 0, pos);
+        glVertex3d(grid->width/2, 0.0, pos);
+        glVertex3d(-grid->width/2, 0.0, pos);
 
-        glVertex3d(pos, 0, grid->width/2);
-        glVertex3d(pos, 0, -grid->width/2);
+        glVertex3d(pos, 0.0, grid->width/2);
+        glVertex3d(pos, 0.0, -grid->width/2);
     }
+
+    // draw XYZ axis lines
+    glColor4d(0.0, 0.0, 1.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(grid->width/2, 0.0, 0.0);
+    glColor4d(1.0, 0.0, 0.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 0.0, grid->width/2);
+    glColor4d(0.0, 1.0, 0.0, 1.0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, grid->width/2, 0.0);
 
     glEnd();
 }

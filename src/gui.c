@@ -95,30 +95,31 @@ static void gl_special_key_func(
     double d_theta = 0.0;
     double d_phi = 0.0;
     const double d_angle = RAD(5.0);
+    const double d_r = 0.5;
 
     if(key == GLUT_KEY_PAGE_UP)
     {
-        d_radius = 0.5;
+        d_radius = -d_r;
     }
     else if(key == GLUT_KEY_PAGE_DOWN)
     {
-        d_radius = -0.5;
+        d_radius = d_r;
     }
     else if(key == GLUT_KEY_LEFT)
     {
-        d_phi = -d_angle;
+        d_phi = d_angle;
     }
     else if(key == GLUT_KEY_RIGHT)
     {
-        d_phi = d_angle;
+        d_phi = -d_angle;
     }
     else if(key == GLUT_KEY_UP)
-    {   
-        d_theta = d_angle;
+    {
+        d_theta = -d_angle;
     }
     else if(key == GLUT_KEY_DOWN)
     {
-        d_theta = -d_angle;
+        d_theta = d_angle;
     }
 
     view_adj_eye_pos(
