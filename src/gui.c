@@ -76,8 +76,8 @@ static void gl_key_func(
         int x,
         int y)
 {
-    const double center_dx = 0.5;
-    const double center_dz = 0.5;
+    const double center_dx = 1.0;
+    const double center_dz = 1.0;
 
     if((key == '\e') || (key == 'q'))
     {
@@ -118,7 +118,7 @@ static void gl_special_key_func(
     double d_theta = 0.0;
     double d_phi = 0.0;
     const double d_angle = RAD(5.0);
-    const double d_r = 0.5;
+    const double d_r = 1.0;
 
     if(key == GLUT_KEY_PAGE_UP)
     {
@@ -170,14 +170,12 @@ static void gl_display_func(void)
 
     grid_render(&g_gui.grid);
 
-    // TODO - testing depth/3D bits
+    terrain_render(&g_gui.terrain);
+
+    // TODO
     glColor4d(1.0, 0.0, 0.0, 1.0);
-    glutWireCube(200.0);
-    glutWireCube(100.0);
     glutWireCube(10.0);
-
     glutSolidCube(1.0);
-
 
     glutSwapBuffers();
 }
@@ -259,6 +257,7 @@ int gui_init(
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_POLYGON_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -284,6 +283,8 @@ void gui_fini(void)
     if(g_gui.window.id >= 0)
     {
         glutExit();
+
+        terrain_fini(&g_gui.terrain);
     }
 }
 

@@ -9,3 +9,4 @@ Heli-X Scene3d Tool
 
 - [index buffers](http://www.learnopengles.com/tag/index-buffer-object/)
 - [buffered terrain](https://www.3dgep.com/multi-textured-terrain-in-opengl/)
+- [vbo wiki](https://en.wikipedia.org/wiki/Vertex_buffer_object)

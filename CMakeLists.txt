@@ -5,7 +5,7 @@ project(scene3d-tool VERSION 0.1 LANGUAGES C)
 # src/lodepng.c is a symlink to vendor/lodepng/lodepng.cpp
 add_executable(
     scene3d-tool
-#    src/lodepng.c
+    src/lodepng.c
     src/view.c
     src/grid.c
     src/terrain.c
@@ -44,8 +44,8 @@ target_compile_definitions(
 target_include_directories(
     scene3d-tool
     PRIVATE
-    include)
-#    vendor/lodepng)
+    include
+    vendor/lodepng)
 
 target_link_libraries(
     scene3d-tool

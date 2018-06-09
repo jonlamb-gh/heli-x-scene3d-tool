@@ -7,6 +7,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include "gl_headers.h"
 #include "gui_types.h"
 
 typedef struct
@@ -18,12 +19,37 @@ typedef struct
     double height_max;
     // determines the space between terrain vertices in world units for both the X and Z axes
     double block_scale;
+
+    // TODO - make a container struct? likely used with texture/alphamap
+    char heightmap_filename[256];
+    GLuint heightmap_width;
+    GLuint heightmap_height;
+    GLuint heightmap_size;
+    unsigned char *heightmap_data;
+
+    //double terrain_width;
+    //double terrain_height;
+
+    GLuint num_vertices;
+    point_3d_s *vertex_buffer;
+
     // TODO
     // heightmap
     // alphamap
     // texture_r
     // texture_g
     // texture_b
+    GLuint vertex_buffer_id;
+    GLuint normal_buffer_id;
+    GLuint index_buffer_id;
+    //GLuint color_buffer_id;
+    //GLuint texture0_buffer_id;
+    //GLuint texture1_buffer_id;
+    //GLuint texture2_buffer_id;
+
+    GLuint texture0;
+    GLuint texture1;
+    GLuint texture2;
 } terrain_s;
 
 int terrain_init(
