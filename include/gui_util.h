@@ -48,6 +48,15 @@
 #endif
 
 /**
+ * @brief Radians to degrees.
+ *
+ */
+#ifndef DEG
+#define DEG(r) ((r*180.0)/M_PI)
+#endif
+
+
+/**
  * @brief Constrain amount to the range low:high.
  *
  */

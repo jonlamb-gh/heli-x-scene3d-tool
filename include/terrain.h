@@ -26,7 +26,7 @@ typedef struct
     // texture_b
 } terrain_s;
 
-void terrain_init(
+int terrain_init(
         const config_s * const config,
         terrain_s * const terrain);
 

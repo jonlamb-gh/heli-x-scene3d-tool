@@ -15,4 +15,23 @@
 #include "gui_util.h"
 #include "terrain.h"
 
-// TODO
+int terrain_init(
+        const config_s * const config,
+        terrain_s * const terrain)
+{
+    int ret = 0;
+
+    return ret;
+}
+
+void terrain_fini(
+        terrain_s * const terrain)
+{
+
+}
+
+void terrain_render(
+        const terrain_s * const terrain)
+{
+
+}

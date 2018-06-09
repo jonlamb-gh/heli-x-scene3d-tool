@@ -6,6 +6,7 @@ project(scene3d-tool VERSION 0.1 LANGUAGES C)
 add_executable(
     scene3d-tool
 #    src/lodepng.c
+    src/view.c
     src/grid.c
     src/terrain.c
     src/gui.c

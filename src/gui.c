@@ -8,11 +8,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "config.h"
 #include "gl_headers.h"
 #include "gui_types.h"
 #include "gui_util.h"
+#include "view.h"
 #include "grid.h"
 #include "terrain.h"
 #include "gui.h"
@@ -40,17 +42,9 @@ static void gl_reshape_func(
         int w,
         int h)
 {
-    // TODO - move to view_s
-    const double fov_degrees = 50.0;
     //const double aspect_ratio = 1.0;
     const double aspect_ratio = (double) w / (double) h;
-    const double z_near = 1.0;
-    const double z_far = 50.0;
-
-    // TODO - instead of scaling FOV, use spherical coordinates
-    const double eye_pos[3] = {15.0, 15.0, 5.0};
-    const double center_pos[3] = {0.0, 0.0, 0.0};
-    const double up_vector[3] = {0.0, 1.0, 0.0};
+    const double up_vector[3] = CONFIG_VIEW_UP_VECTOR_INITIALIZER;
 
     g_gui.window.width = (unsigned long) w;
     g_gui.window.height = (unsigned long) h;
@@ -61,17 +55,17 @@ static void gl_reshape_func(
     glLoadIdentity();
 
     gluPerspective(
-            fov_degrees * g_gui.view.zoom_factor,
+            g_gui.view.fov,
             aspect_ratio,
-            z_near,
-            z_far);
+            g_gui.view.z_near,
+            g_gui.view.z_far);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     gluLookAt(
-            eye_pos[0], eye_pos[1], eye_pos[2],
-            center_pos[0], center_pos[1], center_pos[2],
+            g_gui.view.eye_pos[0], g_gui.view.eye_pos[1], g_gui.view.eye_pos[2],
+            g_gui.view.center_pos[0], g_gui.view.center_pos[1], g_gui.view.center_pos[2],
             up_vector[0], up_vector[1], up_vector[2]);
 
     glutPostRedisplay();
@@ -97,19 +91,41 @@ static void gl_special_key_func(
         int x,
         int y)
 {
+    double d_radius = 0.0;
+    double d_theta = 0.0;
+    double d_phi = 0.0;
+    const double d_angle = RAD(5.0);
+
     if(key == GLUT_KEY_PAGE_UP)
     {
-        g_gui.view.zoom_factor += 0.1;
+        d_radius = 0.5;
     }
     else if(key == GLUT_KEY_PAGE_DOWN)
     {
-        g_gui.view.zoom_factor -= 0.1;
-
-        if(g_gui.view.zoom_factor <= 0.0)
-        {
-            g_gui.view.zoom_factor = 0.1;
-        }
+        d_radius = -0.5;
     }
+    else if(key == GLUT_KEY_LEFT)
+    {
+        d_phi = -d_angle;
+    }
+    else if(key == GLUT_KEY_RIGHT)
+    {
+        d_phi = d_angle;
+    }
+    else if(key == GLUT_KEY_UP)
+    {   
+        d_theta = d_angle;
+    }
+    else if(key == GLUT_KEY_DOWN)
+    {
+        d_theta = -d_angle;
+    }
+
+    view_adj_eye_pos(
+            d_radius,
+            d_theta,
+            d_phi,
+            &g_gui.view);
 
     gl_reshape_func(
             (int) g_gui.window.width,
@@ -156,10 +172,6 @@ int gui_init(
     g_gui.window.width = (unsigned long) config->win_width;
     g_gui.window.height = (unsigned long) config->win_height;
 
-    g_gui.view.zoom_factor = 1.0;
-    g_gui.view.theta = 0.0;
-    g_gui.view.phi = 0.0;
-
     glutInit(&g_gui.gl_argc, g_gui.gl_argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
@@ -175,7 +187,11 @@ int gui_init(
 
     if(ret == 0)
     {
+        view_init(config, &g_gui.view);
+
         grid_init(config, &g_gui.grid);
+
+        ret = terrain_init(config, &g_gui.terrain);
     }
 
     if(ret == 0)
