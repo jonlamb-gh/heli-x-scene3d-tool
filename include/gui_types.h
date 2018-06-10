@@ -13,6 +13,7 @@ typedef struct
 {
     int win_width;
     int win_height;
+    int show_grid;
 } config_s;
 
 typedef struct

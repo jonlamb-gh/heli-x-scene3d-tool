@@ -72,6 +72,7 @@ void grid_init(
 void grid_render(
         const grid_s * const grid)
 {
+    glPushAttrib(GL_DEPTH_TEST);
     glDisable(GL_DEPTH_TEST);
 
     glBegin(GL_LINES);
@@ -82,5 +83,5 @@ void grid_render(
 
     glEnd();
 
-    glEnable(GL_DEPTH_TEST);
+    glPopAttrib();
 }

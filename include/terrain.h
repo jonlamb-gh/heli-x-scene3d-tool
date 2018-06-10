@@ -31,6 +31,7 @@ typedef struct
     GLuint num_triangles;
     GLuint num_indices;
     point_3d_s *vertex_buffer;
+    point_3d_s *normal_buffer;
     GLuint *index_buffer;
 
     // TODO

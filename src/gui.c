@@ -76,8 +76,8 @@ static void gl_key_func(
         int x,
         int y)
 {
-    const double center_dx = 1.0;
-    const double center_dz = 1.0;
+    const double center_dx = 2.0;
+    const double center_dz = 2.0;
 
     if((key == '\e') || (key == 'q'))
     {
@@ -103,6 +103,10 @@ static void gl_key_func(
     {
         view_adj_center_pos(0.0, -center_dz, &g_gui.view);
     }
+    else if(key == 'g')
+    {
+        g_gui.config.show_grid = !g_gui.config.show_grid;
+    }
 
     gl_reshape_func(
             (int) g_gui.window.width,
@@ -118,7 +122,7 @@ static void gl_special_key_func(
     double d_theta = 0.0;
     double d_phi = 0.0;
     const double d_angle = RAD(5.0);
-    const double d_r = 1.0;
+    const double d_r = 2.0;
 
     if(key == GLUT_KEY_PAGE_UP)
     {
@@ -168,9 +172,12 @@ static void gl_display_func(void)
 
     glEnable(GL_BLEND);
 
-    grid_render(&g_gui.grid);
-
     terrain_render(&g_gui.terrain);
+
+    if(g_gui.config.show_grid != 0)
+    {
+        grid_render(&g_gui.grid);
+    }
 
     // TODO
     glColor4d(1.0, 0.0, 0.0, 1.0);
