@@ -141,7 +141,8 @@ static int generate_heightmap_vbo(
 
     // TODO
     //const GLdouble height_scale = ABS(terrain->min - terrain->max) / 255.0;
-    const GLdouble height_scale = -50.0;
+    const GLdouble height_scale = 50.0;
+    const GLdouble height_offset = -50.0;
 
     const GLdouble terrain_width =
             (GLdouble) (terrain->heightmap_width - 1) * terrain->block_scale;
@@ -171,7 +172,7 @@ static int generate_heightmap_vbo(
             terrain->vertex_buffer[index].xyz[0] =
                     (s * terrain_width) - half_terrain_width;
             terrain->vertex_buffer[index].xyz[1] =
-                    (height_value * height_scale);
+                    (height_value * height_scale) + height_offset;
             terrain->vertex_buffer[index].xyz[2] =
                     (t * terrain_height) - half_terrain_height;
         }
