@@ -10,6 +10,12 @@
 #include "gl_headers.h"
 #include "gui_types.h"
 
+typedef enum
+{
+    TERRAIN_PRIMITIVE_POINTS = 0,
+    TERRAIN_PRIMITIVE_TRIANGLES,
+} terrain_primitive_kind;
+
 typedef struct
 {
     double width;
@@ -61,6 +67,7 @@ void terrain_fini(
         terrain_s * const terrain);
 
 void terrain_render(
+        const terrain_primitive_kind kind,
         const terrain_s * const terrain);
 
 #endif /* TERRAIN_H */

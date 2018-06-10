@@ -349,6 +349,58 @@ static int generate_heightmap_nbo(
     return ret;
 }
 
+static void render_points(
+        const terrain_s * const terrain)
+{
+    // TODO - color/size
+    glColor4d(0.0, 1.0, 0.0, 1.0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, terrain->vertex_buffer_id);
+    glVertexPointer(3, GL_DOUBLE, 0, NULL);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    glDrawArrays(
+            GL_POINTS,
+            0,
+            terrain->num_vertices);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+static void render_triangles(
+        const terrain_s * const terrain)
+{
+    // TODO - color/texture buffers
+    glColor4d(0.0, 1.0, 0.0, 1.0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, terrain->vertex_buffer_id);
+    glVertexPointer(3, GL_DOUBLE, 0, NULL);
+
+    glBindBuffer(GL_ARRAY_BUFFER, terrain->normal_buffer_id);
+    glNormalPointer(GL_DOUBLE, 0, NULL);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain->index_buffer_id);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    glDrawElements(
+            GL_TRIANGLES,
+            terrain->num_indices,
+            GL_UNSIGNED_INT,
+            0);
+
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 int terrain_init(
         const config_s * const config,
         terrain_s * const terrain)
@@ -437,31 +489,18 @@ void terrain_fini(
 }
 
 void terrain_render(
+        const terrain_primitive_kind kind,
         const terrain_s * const terrain)
 {
-    // TODO - color
-    glColor4d(0.0, 1.0, 0.0, 1.0);
+    assert(kind >= TERRAIN_PRIMITIVE_POINTS);
+    assert(kind <= TERRAIN_PRIMITIVE_TRIANGLES);
 
-    glBindBuffer(GL_ARRAY_BUFFER, terrain->vertex_buffer_id);
-    glVertexPointer(3, GL_DOUBLE, 0, NULL);
-
-    glBindBuffer(GL_ARRAY_BUFFER, terrain->normal_buffer_id);
-    glNormalPointer(GL_DOUBLE, 0, NULL);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain->index_buffer_id);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-
-    glDrawElements(
-            GL_TRIANGLES,
-            terrain->num_indices,
-            GL_UNSIGNED_INT,
-            0);
-
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    if(kind == TERRAIN_PRIMITIVE_POINTS)
+    {
+        render_points(terrain);
+    }
+    else if(kind == TERRAIN_PRIMITIVE_TRIANGLES)
+    {
+        render_triangles(terrain);
+    }
 }

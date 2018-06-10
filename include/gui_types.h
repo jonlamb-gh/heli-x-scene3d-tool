@@ -14,6 +14,7 @@ typedef struct
     int win_width;
     int win_height;
     int show_grid;
+    int terrain_primitive_type;
 } config_s;
 
 typedef struct

@@ -107,6 +107,10 @@ static void gl_key_func(
     {
         g_gui.config.show_grid = !g_gui.config.show_grid;
     }
+    else if(key == 't')
+    {
+        g_gui.config.terrain_primitive_type = !g_gui.config.terrain_primitive_type;
+    }
 
     gl_reshape_func(
             (int) g_gui.window.width,
@@ -172,7 +176,9 @@ static void gl_display_func(void)
 
     glEnable(GL_BLEND);
 
-    terrain_render(&g_gui.terrain);
+    terrain_render(
+            (terrain_primitive_kind) g_gui.config.terrain_primitive_type,
+            &g_gui.terrain);
 
     if(g_gui.config.show_grid != 0)
     {
