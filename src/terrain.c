@@ -66,6 +66,8 @@ static int allocate_buffers(
 {
     int ret = 0;
 
+    terrain->block_scale = terrain->width / (double) terrain->heightmap_width;
+
     terrain->num_vertices = terrain->heightmap_size;
 
     // two triangles for every quad in the terrain mesh
@@ -139,10 +141,15 @@ static int generate_heightmap_vbo(
 {
     int ret = 0;
 
-    // TODO
-    //const GLdouble height_scale = ABS(terrain->min - terrain->max) / 255.0;
-    const GLdouble height_scale = 50.0;
-    const GLdouble height_offset = -50.0;
+    // TODO - check this
+    const GLdouble height_scale = ABS(terrain->height_min - terrain->height_max);
+    GLdouble height_offset = 0.0;
+
+    // TODO - check this
+    if(terrain->height_min != 0.0)
+    {
+        height_offset = terrain->height_min;
+    }
 
     const GLdouble terrain_width =
             (GLdouble) (terrain->heightmap_width - 1) * terrain->block_scale;
@@ -415,6 +422,7 @@ int terrain_init(
     terrain->height_min = -50.0;
     terrain->height_max = 0.0;
 
+    // actual value is determined once heightmap dimensions are known
     terrain->block_scale = 1.0;
 
     if(ret == 0)
@@ -492,8 +500,8 @@ void terrain_render(
         const terrain_primitive_kind kind,
         const terrain_s * const terrain)
 {
-    assert(kind >= TERRAIN_PRIMITIVE_POINTS);
-    assert(kind <= TERRAIN_PRIMITIVE_TRIANGLES);
+    assert(kind >= TERRAIN_PRIMITIVE_TRIANGLES);
+    assert(kind <= TERRAIN_PRIMITIVE_POINTS);
 
     if(kind == TERRAIN_PRIMITIVE_POINTS)
     {

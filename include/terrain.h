@@ -12,8 +12,8 @@
 
 typedef enum
 {
-    TERRAIN_PRIMITIVE_POINTS = 0,
-    TERRAIN_PRIMITIVE_TRIANGLES,
+    TERRAIN_PRIMITIVE_TRIANGLES = 0,
+    TERRAIN_PRIMITIVE_POINTS
 } terrain_primitive_kind;
 
 typedef struct
