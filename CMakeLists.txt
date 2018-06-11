@@ -9,6 +9,7 @@ add_executable(
     src/view.c
     src/grid.c
     src/terrain.c
+    src/actor.c
     src/gui.c
     src/main.c)
 

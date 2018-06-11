@@ -12,6 +12,7 @@
 // simple 2D grid for now
 typedef struct
 {
+    double y_pos;
     double width;
     double line_spacing;
     double line_width;
@@ -20,6 +21,10 @@ typedef struct
 
 void grid_init(
         const config_s * const config,
+        grid_s * const grid);
+
+void grid_adj_height(
+        const double dh,
         grid_s * const grid);
 
 void grid_render(

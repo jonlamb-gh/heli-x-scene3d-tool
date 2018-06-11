@@ -44,11 +44,11 @@ static void render_cartesian_grid(
     double pos;
     for(pos = -grid->width/2; pos <= grid->width/2; pos += grid->line_spacing)
     {
-        glVertex3d(grid->width/2, 0.0, pos);
-        glVertex3d(-grid->width/2, 0.0, pos);
+        glVertex3d(grid->width/2, grid->y_pos, pos);
+        glVertex3d(-grid->width/2, grid->y_pos, pos);
 
-        glVertex3d(pos, 0.0, grid->width/2);
-        glVertex3d(pos, 0.0, -grid->width/2);
+        glVertex3d(pos, grid->y_pos, grid->width/2);
+        glVertex3d(pos, grid->y_pos, -grid->width/2);
     }
 }
 
@@ -57,6 +57,7 @@ void grid_init(
         grid_s * const grid)
 {
     // TODO - configs
+    grid->y_pos = 0.0;
     grid->width = 400.0;
     grid->line_spacing = 1.0;
     grid->line_width = CONFIG_LINE_WIDTH;
@@ -69,12 +70,16 @@ void grid_init(
     assert(grid->line_spacing > 0.0);
 }
 
+void grid_adj_height(
+        const double dh,
+        grid_s * const grid)
+{
+    grid->y_pos += dh;
+}
+
 void grid_render(
         const grid_s * const grid)
 {
-    glPushAttrib(GL_DEPTH_TEST);
-    glDisable(GL_DEPTH_TEST);
-
     glBegin(GL_LINES);
 
     render_cartesian_grid(grid);
@@ -82,6 +87,4 @@ void grid_render(
     render_axis_lines(grid);
 
     glEnd();
-
-    glPopAttrib();
 }

@@ -17,6 +17,7 @@
 #include "view.h"
 #include "grid.h"
 #include "terrain.h"
+#include "actor.h"
 #include "gui.h"
 
 typedef struct
@@ -28,6 +29,7 @@ typedef struct
     config_s config;
     view_s view;
     grid_s grid;
+    actor_s actor;
     terrain_s terrain;
 } gui_s;
 
@@ -77,7 +79,9 @@ static void gl_key_func(
         int y)
 {
     const double center_dx = 2.0;
+    const double center_dy = 1.0;
     const double center_dz = 2.0;
+    const double grid_dheight = 1.0;
 
     if((key == '\e') || (key == 'q'))
     {
@@ -86,22 +90,24 @@ static void gl_key_func(
     else if(key == 'r')
     {
         view_init(&g_gui.config, &g_gui.view);
+        grid_init(&g_gui.config, &g_gui.grid);
+        actor_init(&g_gui.config, &g_gui.actor);
     }
     else if(key == 'w')
     {
-        view_adj_center_pos(-center_dx, 0.0, &g_gui.view);
+        view_adj_center_pos(-center_dx, 0.0, 0.0, &g_gui.view);
     }
     else if(key == 's')
     {
-        view_adj_center_pos(center_dx, 0.0, &g_gui.view);
+        view_adj_center_pos(center_dx, 0.0, 0.0, &g_gui.view);
     }
     else if(key == 'a')
     {
-        view_adj_center_pos(0.0, center_dz, &g_gui.view);
+        view_adj_center_pos(0.0, 0.0, center_dz, &g_gui.view);
     }
     else if(key == 'd')
     {
-        view_adj_center_pos(0.0, -center_dz, &g_gui.view);
+        view_adj_center_pos(0.0, 0.0, -center_dz, &g_gui.view);
     }
     else if(key == 'g')
     {
@@ -111,6 +117,27 @@ static void gl_key_func(
     {
         g_gui.config.terrain_primitive_type = !g_gui.config.terrain_primitive_type;
     }
+    else if(key == 'h')
+    {
+        grid_adj_height(grid_dheight, &g_gui.grid);
+    }
+    else if(key == 'l')
+    {
+        grid_adj_height(-grid_dheight, &g_gui.grid);
+    }
+    else if(key == 'e')
+    {
+        view_adj_center_pos(0.0, center_dy, 0.0, &g_gui.view);
+    }
+    else if(key == 'c')
+    {
+        view_adj_center_pos(0.0, -center_dy, 0.0, &g_gui.view);
+    }
+
+    // TODO - move to better place
+    g_gui.actor.pos[0] = g_gui.view.center_pos[0];
+    g_gui.actor.pos[1] = g_gui.view.center_pos[1];
+    g_gui.actor.pos[2] = g_gui.view.center_pos[2];
 
     gl_reshape_func(
             (int) g_gui.window.width,
@@ -185,10 +212,7 @@ static void gl_display_func(void)
         grid_render(&g_gui.grid);
     }
 
-    // TODO
-    glColor4d(1.0, 0.0, 0.0, 1.0);
-    glutWireCube(10.0);
-    glutSolidCube(1.0);
+    actor_render(&g_gui.actor);
 
     glutSwapBuffers();
 }
@@ -227,6 +251,8 @@ int gui_init(
         view_init(config, &g_gui.view);
 
         grid_init(config, &g_gui.grid);
+
+        actor_init(config, &g_gui.actor);
 
         ret = terrain_init(config, &g_gui.terrain);
     }

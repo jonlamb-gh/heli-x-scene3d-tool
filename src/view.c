@@ -68,13 +68,14 @@ void view_adj_eye_pos(
 
 void view_adj_center_pos(
         const double dx,
+        const double dy,
         const double dz,
         view_s * const view)
 {
     // TODO - constraints
     // TODO - auto-y ?
-    //view->center_pos[1] = 0;
     view->center_pos[0] += dx;
+    view->center_pos[1] += dy;
     view->center_pos[2] += dz;
 
     view_update_eye_pos(view);

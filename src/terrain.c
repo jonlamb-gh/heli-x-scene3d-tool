@@ -360,7 +360,8 @@ static void render_points(
         const terrain_s * const terrain)
 {
     // TODO - color/size
-    glColor4d(0.0, 1.0, 0.0, 1.0);
+    //glColor4d(0.0, 1.0, 0.0, 1.0);
+    glColor4d(1.0, 0.5, 0.0, 1.0);
 
     glBindBuffer(GL_ARRAY_BUFFER, terrain->vertex_buffer_id);
     glVertexPointer(3, GL_DOUBLE, 0, NULL);
@@ -382,7 +383,8 @@ static void render_triangles(
         const terrain_s * const terrain)
 {
     // TODO - color/texture buffers
-    glColor4d(0.0, 1.0, 0.0, 1.0);
+    //glColor4d(0.0, 1.0, 0.0, 1.0);
+    glColor4d(1.0, 0.5, 0.0, 1.0);
 
     glBindBuffer(GL_ARRAY_BUFFER, terrain->vertex_buffer_id);
     glVertexPointer(3, GL_DOUBLE, 0, NULL);
